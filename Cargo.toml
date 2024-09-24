@@ -1,0 +1,7 @@
+[package]
+name = "ffischbach-events-api-rust"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ntex = { version = "2", features = ["tokio"] }
