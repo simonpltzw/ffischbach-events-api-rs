@@ -1,7 +1,13 @@
 [package]
-name = "ffischbach-events-api-rust"
+name = "ffischbach-events-api-rs"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 ntex = { version = "2", features = ["tokio"] }
+serde = { version = "1.0.210", features = ["derive"] }
+serde_json = "1.0.128"
+utoipa = "4.2.3"
+utoipa-swagger-ui = "7.1.0"
+
+# chrono = "0.4.38"

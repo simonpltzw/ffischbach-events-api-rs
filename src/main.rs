@@ -1,28 +1,17 @@
 use ntex::web;
 
-pub mod services;
-
-#[web::get("/")]
-async fn hello() -> impl web::Responder {
-    web::HttpResponse::Ok().body("Hello world!")
-}
-
-#[web::post("/echo")]
-async fn echo(req_body: String) -> impl web::Responder {
-    web::HttpResponse::Ok().body(req_body)
-}
-
-async fn manual_hello() -> impl web::Responder {
-    web::HttpResponse::Ok().body("Hey there!")
-}
+mod error;
+mod services;
+mod models;
 
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
     web::HttpServer::new(|| {
         web::App::new()
-            .service(hello)
-            .service(echo)
-            .route("/hey", web::get().to(manual_hello))
+            // Register event endpoints
+            .configure(services::event::ntex_config)
+            // Register swagger endpoints
+            .configure(services::openapi::ntex_config)
             // Default endpoint for unregisterd endpoints
             .default_service(web::route().to(services::default))
     })
