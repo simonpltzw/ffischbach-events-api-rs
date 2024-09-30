@@ -1,6 +1,9 @@
+use diesel::prelude::*;
 use ntex::web::{self};
 use serde::Deserialize;
 use utoipa::IntoParams;
+
+use crate::{models::event::EventOutput, schema::Events};
 
 #[derive(Deserialize, IntoParams)]
 #[into_params(parameter_in = Query)]
@@ -25,8 +28,16 @@ pub async fn get_events(query: web::types::Query<GetEventParams>) -> web::HttpRe
   let top = query.top.unwrap_or(100);
   let skip = query.skip.unwrap_or_default();
 
+  use crate::schema::Events::dsl::*;
 
-  web::HttpResponse::Ok().content_type("application/json").body(format!("top: {}, skip: {}", top, skip))
+  let connection = &mut crate::establish_connection();
+  let results = Events
+        .limit(top as i64)
+        .select(EventOutput::as_select())
+        .load(connection)
+        .expect("Error loading posts");
+
+  web::HttpResponse::Ok().json(&results)
 }
 
 /// Get an event by id
