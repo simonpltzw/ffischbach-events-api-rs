@@ -3,7 +3,7 @@ use ntex::web::{self};
 use serde::Deserialize;
 use utoipa::IntoParams;
 
-use crate::{models::event::EventOutput, schema::Events};
+use crate::models::event::EventOutput;
 
 #[derive(Deserialize, IntoParams)]
 #[into_params(parameter_in = Query)]
@@ -24,17 +24,19 @@ struct GetEventParams {
   ),
 )]
 #[web::get("/events")]
-pub async fn get_events(query: web::types::Query<GetEventParams>) -> web::HttpResponse {
+pub async fn get_events(pool: web::types::State<crate::DbPool>, query: web::types::Query<GetEventParams>) -> web::HttpResponse {
   let top = query.top.unwrap_or(100);
   let skip = query.skip.unwrap_or_default();
 
-  use crate::schema::Events::dsl::*;
+  use crate::schema::events::dsl::*;
 
-  let connection = &mut crate::establish_connection();
-  let results = Events
+  let mut conn = pool.get().expect("couldn't get db connection from pool");
+
+  let results = events
         .limit(top as i64)
+        .offset(skip as i64)
         .select(EventOutput::as_select())
-        .load(connection)
+        .load(&mut conn)
         .expect("Error loading posts");
 
   web::HttpResponse::Ok().json(&results)

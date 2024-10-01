@@ -1,22 +1,22 @@
-use diesel::{prelude::Queryable, Selectable};
-use utoipa::ToSchema;
+use diesel::prelude::*;
 use serde::{Serialize, Deserialize};
+use utoipa::ToSchema;
 
 /// Event output model
-#[derive(Clone, Debug, Serialize, Deserialize, ToSchema, Queryable, Selectable)]
-#[diesel(table_name = crate::schema::Events)]
-#[diesel(check_for_backend(diesel::pg::Pg))]
+#[derive(Clone, Debug, Serialize, ToSchema, Deserialize, Queryable, Selectable)]
+#[diesel(table_name = crate::schema::events)]
 pub struct EventOutput {
   /// The event id
-  pub Id: String,
+  pub id: String,
   /// The event description
-  pub Description:Option<String>,
+  pub description:Option<String>,
   /// The event completed status
-  pub Completed: bool,
+  pub completed: bool,
+
   // /// Amount of groups
-  // // pub total_groups: i32,
+  // pub total_groups: i32,
   // /// Amount of participants
-  // // pub total_participants: i32
+  // pub total_participants: i32
 }
 
 /// Event detail output model

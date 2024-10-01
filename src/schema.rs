@@ -1,72 +1,104 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
-    EventManagers (Id) {
-        Id -> Int4,
-        ManagerId -> Int4,
+    #[sql_name = "EventManagers"]
+    event_managers (id) {
+        #[sql_name = "Id"]
+        id -> Int4,
+        #[sql_name = "ManagerId"]
+        manager_id -> Int4,
+        #[sql_name = "EventId"]
         #[max_length = 20]
-        EventId -> Varchar,
-        CreatedAt -> Timestamptz,
+        event_id -> Varchar,
+        #[sql_name = "CreatedAt"]
+        created_at -> Timestamptz,
     }
 }
 
 diesel::table! {
-    Events (Id) {
+    #[sql_name = "Events"]
+    events (id) {
+        #[sql_name = "Id"]
         #[max_length = 20]
-        Id -> Varchar,
+        id -> Varchar,
+        #[sql_name = "Description"]
         #[max_length = 1000]
-        Description -> Nullable<Varchar>,
-        PublicKey -> Text,
-        CreatedBy -> Text,
-        CreatedAt -> Timestamptz,
-        Completed -> Bool,
-        EncryptedPrivateKey -> Text,
+        description -> Nullable<Varchar>,
+        #[sql_name = "PublicKey"]
+        public_key -> Text,
+        #[sql_name = "CreatedBy"]
+        created_by -> Text,
+        #[sql_name = "CreatedAt"]
+        created_at -> Timestamptz,
+        #[sql_name = "Completed"]
+        completed -> Bool,
+        #[sql_name = "EncryptedPrivateKey"]
+        encrypted_private_key -> Text,
     }
 }
 
 diesel::table! {
-    Groups (Id) {
-        Id -> Int4,
-        Category -> Int4,
-        Approved -> Nullable<Bool>,
+    #[sql_name = "Groups"]
+    groups (id) {
+        #[sql_name = "Id"]
+        id -> Int4,
+        #[sql_name = "Category"]
+        category -> Int4,
+        #[sql_name = "Approved"]
+        approved -> Nullable<Bool>,
+        #[sql_name = "EventId"]
         #[max_length = 20]
-        EventId -> Varchar,
-        CreatedAt -> Timestamptz,
-        EncryptedName -> Bytea,
+        event_id -> Varchar,
+        #[sql_name = "CreatedAt"]
+        created_at -> Timestamptz,
+        #[sql_name = "EncryptedName"]
+        encrypted_name -> Bytea,
+        #[sql_name = "HashedName"]
         #[max_length = 64]
-        HashedName -> Varchar,
+        hashed_name -> Varchar,
     }
 }
 
 diesel::table! {
-    Managers (Id) {
-        Id -> Int4,
+    #[sql_name = "Managers"]
+    managers (id) {
+        #[sql_name = "Id"]
+        id -> Int4,
+        #[sql_name = "Email"]
         #[max_length = 100]
-        Email -> Varchar,
-        CreatedAt -> Timestamptz,
+        email -> Varchar,
+        #[sql_name = "CreatedAt"]
+        created_at -> Timestamptz,
     }
 }
 
 diesel::table! {
-    Participants (Id) {
-        Id -> Int4,
-        EncryptedData -> Bytea,
-        IsContact -> Bool,
-        VIP -> Nullable<Bool>,
-        GroupId -> Int4,
-        CreatedAt -> Timestamptz,
+    #[sql_name = "Participants"]
+    participants (id) {
+        #[sql_name = "Id"]
+        id -> Int4,
+        #[sql_name = "EncryptedData"]
+        encrypted_data -> Bytea,
+        #[sql_name = "IsContact"]
+        is_contact -> Bool,
+        #[sql_name = "VIP"]
+        vip -> Nullable<Bool>,
+        #[sql_name = "GroupId"]
+        group_id -> Int4,
+        #[sql_name = "CreatedAt"]
+        created_at -> Timestamptz,
     }
 }
 
-diesel::joinable!(EventManagers -> Events (EventId));
-diesel::joinable!(EventManagers -> Managers (ManagerId));
-diesel::joinable!(Groups -> Events (EventId));
-diesel::joinable!(Participants -> Groups (GroupId));
+diesel::joinable!(event_managers -> events (event_id));
+diesel::joinable!(event_managers -> managers (manager_id));
+diesel::joinable!(groups -> events (event_id));
+diesel::joinable!(participants -> groups (group_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
-    EventManagers,
-    Events,
-    Groups,
-    Managers,
-    Participants,
+    event_managers,
+    events,
+    groups,
+    managers,
+    participants,
 );

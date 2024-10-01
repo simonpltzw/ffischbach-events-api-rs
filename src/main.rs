@@ -1,6 +1,7 @@
 use std::env;
 
 use diesel::{Connection, PgConnection};
+use diesel::r2d2::{self, ConnectionManager};
 use dotenvy::dotenv;
 use ntex::web;
 
@@ -9,10 +10,23 @@ mod services;
 mod models;
 mod schema;
 
+type DbPool = r2d2::Pool<ConnectionManager<PgConnection>>;
+
 #[ntex::main]
 async fn main() -> std::io::Result<()> {
-    web::HttpServer::new(|| {
+    dotenv().ok();
+
+    // set up database connection pool
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let manager = ConnectionManager::<PgConnection>::new(database_url);
+    let pool = r2d2::Pool::builder()
+        .build(manager)
+        .expect("Failed to create pool.");
+
+    web::HttpServer::new(move || {
         web::App::new()
+            // Add connetion pool
+            .state(pool.clone())
             // Register event endpoints
             .configure(services::event::ntex_config)
             // Register swagger endpoints
